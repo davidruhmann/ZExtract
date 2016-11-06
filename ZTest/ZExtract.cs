@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ZTest
 {
@@ -63,8 +65,8 @@ namespace ZTest
 		// Reference[]
 		// Data[]
 
-		public const long DefaultSignature = 0x9EC1832A;
-		public const long SwappedSignature = 0x9E2A83C1;
+		public const long SwappedSignature = 0x9EC1832A;
+		public const long DefaultSignature = 0x9E2A83C1;
 		public const long DefaultChunkSize = 0x020000;
 
 		public struct Header
@@ -80,10 +82,10 @@ namespace ZTest
 			public long UnpackedSize;
 		}
 
-		//private static long Swap(long value)
-		//{
-		//	return BitConverter.ToInt64(BitConverter.GetBytes(value).Reverse().ToArray(), 0);
-		//}
+		private static long Swap(long value)
+		{
+			return BitConverter.ToInt64(BitConverter.GetBytes(value).Reverse().ToArray(), 0);
+		}
 
 		public static void Unpack(string source, string destination)
 		{
@@ -112,11 +114,10 @@ namespace ZTest
 					var swapped = header.Signature != DefaultSignature;
 					if (swapped)
 					{
-						//  C# Stream Reader auto swaps
-						//	// Assume any non default signature is swapped
-						//	header.UnpackedChunkSize = Swap(header.UnpackedChunkSize);
-						//	header.Summary.PackedSize = Swap(header.Summary.PackedSize);
-						//	header.Summary.UnpackedSize = Swap(header.Summary.UnpackedSize);
+						// Assume any non default signature is swapped
+						header.UnpackedChunkSize = Swap(header.UnpackedChunkSize);
+						header.Summary.PackedSize = Swap(header.Summary.PackedSize);
+						header.Summary.UnpackedSize = Swap(header.Summary.UnpackedSize);
 					}
 
 					var size = header.UnpackedChunkSize;
@@ -140,11 +141,11 @@ namespace ZTest
 							PackedSize = reader.ReadInt64(),
 							UnpackedSize = reader.ReadInt64()
 						};
-						//if (swapped)
-						//{
-						//	index.PackedSize = Swap(index.PackedSize);
-						//	index.UnpackedSize = Swap(index.UnpackedSize);
-						//}
+						if (swapped)
+						{
+							index.PackedSize = Swap(index.PackedSize);
+							index.UnpackedSize = Swap(index.UnpackedSize);
+						}
 						catalog.Add(index);
 						total += index.UnpackedSize;
 						largest = Math.Max(largest, index.UnpackedSize);
@@ -163,12 +164,6 @@ namespace ZTest
 						Console.WriteLine("Invalid");
 					}
 
-					//using (var deflate = new DeflateStream(File.Open(destination, FileMode.Create), CompressionMode.Decompress))
-					//{
-					//	reader.BaseStream.CopyTo(deflate);
-					//}
-
-					var x = 0;
 					foreach (var index in catalog)
 					{
 						var zlib = new ZLibHeader
@@ -184,17 +179,13 @@ namespace ZTest
 						}
 
 						var data = new byte[largest];
-						Console.WriteLine(reader.BaseStream.Position);
-						var input = reader.ReadBytes((int)index.PackedSize - 2);
-						Console.WriteLine(reader.BaseStream.Position);
+						var input = reader.ReadBytes((int)index.PackedSize - Marshal.SizeOf(typeof(ZLibHeader)));
 						using (var deflate = new DeflateStream(new MemoryStream(input), CompressionMode.Decompress))
 						{
 							var read = deflate.Read(data, 0, (int)index.UnpackedSize);
 							writer.Write(data, 0, read);
-							x++;
 							// TODO Validate Adler32 of zlib chunk
 						}
-						x++;
 					}
 					// TODO Verify output file with *.uncompressed_size
 				}
