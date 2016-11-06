@@ -109,15 +109,15 @@ namespace ZTest
 						Console.WriteLine("Invalid");
 					}
 
-					//var swapped = header.Signature != DefaultSignature;
-					//if (swapped)
-					//{
-					//	//  C# Stream Reader auto swaps
-					//	//	// Assume any non default signature is swapped
-					//	//	header.UnpackedChunkSize = Swap(header.UnpackedChunkSize);
-					//	//	header.Summary.PackedSize = Swap(header.Summary.PackedSize);
-					//	//	header.Summary.UnpackedSize = Swap(header.Summary.UnpackedSize);
-					//}
+					var swapped = header.Signature != DefaultSignature;
+					if (swapped)
+					{
+						//  C# Stream Reader auto swaps
+						//	// Assume any non default signature is swapped
+						//	header.UnpackedChunkSize = Swap(header.UnpackedChunkSize);
+						//	header.Summary.PackedSize = Swap(header.Summary.PackedSize);
+						//	header.Summary.UnpackedSize = Swap(header.Summary.UnpackedSize);
+					}
 
 					var size = header.UnpackedChunkSize;
 					if (size == DefaultSignature || size == 0)
@@ -163,33 +163,137 @@ namespace ZTest
 						Console.WriteLine("Invalid");
 					}
 
-					var zlib = new ZLibHeader
-					{
-						CMF = reader.ReadByte(),
-						FLG = reader.ReadByte()
-					};
+					//using (var deflate = new DeflateStream(File.Open(destination, FileMode.Create), CompressionMode.Decompress))
+					//{
+					//	reader.BaseStream.CopyTo(deflate);
+					//}
 
-					if (!zlib.IsValid)
+					var x = 0;
+					using (var file = File.Open(destination, FileMode.Create))
 					{
-						// TODO WARNING that the zlib header failed validation
-						Console.WriteLine("Invalid");
-					}
-
-					using (var deflate = new DeflateStream(reader.BaseStream, CompressionMode.Decompress))
-					{
-						var data = new byte[largest];
 						foreach (var index in catalog)
 						{
-							var processed = 0;
-							while (processed < index.UnpackedSize)
+							var zlib = new ZLibHeader
 							{
-								var read = deflate.Read(data, 0, (int)largest);
-								processed += read;
-								writer.Write(data, 0, read);
+								CMF = reader.ReadByte(),
+								FLG = reader.ReadByte()
+							};
+
+							if (!zlib.IsValid)
+							{
+								// TODO WARNING that the zlib header failed validation
+								Console.WriteLine("Invalid");
+							}
+							var data = reader.ReadBytes((int)index.PackedSize);
+							using (var deflate = new DeflateStream(file, CompressionMode.Decompress, true))
+							{
+
 								// TODO Validate Adler32 of zlib chunk
 							}
+							x++;
 						}
 					}
+
+					//var x = 0;
+					//using (var file = File.Open(destination, FileMode.Create))
+					//{
+					//	foreach (var index in catalog)
+					//	{
+					//		var zlib = new ZLibHeader
+					//		{
+					//			CMF = reader.ReadByte(),
+					//			FLG = reader.ReadByte()
+					//		};
+
+					//		if (!zlib.IsValid)
+					//		{
+					//			// TODO WARNING that the zlib header failed validation
+					//			Console.WriteLine("Invalid");
+					//		}
+					//		var data = reader.ReadBytes((int)index.PackedSize);
+					//		using (var deflate = new DeflateStream(file, CompressionMode.Decompress, true))
+					//		{
+
+					//			// TODO Validate Adler32 of zlib chunk
+					//		}
+					//		x++;
+					//	}
+					//}
+
+					//var x = 0;
+					//var data = new byte[largest];
+					//foreach (var index in catalog)
+					//{
+					//	var data = reader.ReadBytes(index.PackedSize);
+					//	using (var deflate = new DeflateStream(reader.BaseStream, CompressionMode.Decompress, true))
+					//	{
+					//		var read = deflate.Read(data, 0, (int)index.UnpackedSize);
+					//		writer.Write(data, 0, read);
+					//		// TODO Validate Adler32 of zlib chunk
+					//	}
+					//	x++;
+					//}
+
+					//var x = 0;
+					//var data = new byte[largest];
+					//foreach (var index in catalog)
+					//{
+					//	using (var writer = File.Open(destination, FileMode.Create))
+					//	{
+					//		using (var deflate = new DeflateStream(writer, CompressionMode.Decompress, true))
+					//		{
+					//			deflate.Write(reader.ReadBytes((int)index.PackedSize), 0, (int)index.UnpackedSize);
+					//			// TODO Validate Adler32 of zlib chunk
+					//		}
+					//	}
+					//	x++;
+					//}
+
+					//var x = 0;
+					//var data = new byte[largest];
+					//foreach (var index in catalog)
+					//{
+					//	var zlib = new ZLibHeader
+					//	{
+					//		CMF = reader.ReadByte(),
+					//		FLG = reader.ReadByte()
+					//	};
+
+					//	if (!zlib.IsValid)
+					//	{
+					//		// TODO WARNING that the zlib header failed validation
+					//		Console.WriteLine("Invalid");
+					//	}
+
+					//	using (var deflate = new DeflateStream(reader.BaseStream, CompressionMode.Decompress, true))
+					//	{
+					//		var read = deflate.Read(data, 0, (int)index.UnpackedSize);
+					//		writer.Write(data, 0, read);
+					//		x++;
+					//		// TODO Validate Adler32 of zlib chunk
+					//	}
+					//	var d = reader.ReadBytes(10);
+					//	Console.Write(d);
+					//}
+
+					//using (var deflate = new DeflateStream(reader.BaseStream, CompressionMode.Decompress))
+					//{
+					//	deflate.CopyTo(writer.BaseStream);
+					//}
+
+					//using (var deflate = new DeflateStream(reader.BaseStream, CompressionMode.Decompress, true))
+					//{
+					//	var x = 0;
+					//	var data = new byte[largest];
+					//	foreach (var index in catalog)
+					//	{
+
+					//		var read = deflate.Read(data, 0, (int)index.UnpackedSize);
+					//		writer.Write(data, 0, read);
+					//		x++;
+					//		// TODO Validate Adler32 of zlib chunk
+					//	}
+					//}
 
 					// TODO Verify output file with *.uncompressed_size
 				}
