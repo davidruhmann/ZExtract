@@ -169,30 +169,37 @@ namespace ZTest
 					//}
 
 					var x = 0;
-					using (var file = File.Open(destination, FileMode.Create))
+					//using (var file = File.Open(destination, FileMode.Create))
+					//{
+					foreach (var index in catalog)
 					{
-						foreach (var index in catalog)
+						var zlib = new ZLibHeader
 						{
-							var zlib = new ZLibHeader
-							{
-								CMF = reader.ReadByte(),
-								FLG = reader.ReadByte()
-							};
+							CMF = reader.ReadByte(),
+							FLG = reader.ReadByte()
+						};
 
-							if (!zlib.IsValid)
-							{
-								// TODO WARNING that the zlib header failed validation
-								Console.WriteLine("Invalid");
-							}
-							var data = reader.ReadBytes((int)index.PackedSize);
-							using (var deflate = new DeflateStream(file, CompressionMode.Decompress, true))
-							{
-
-								// TODO Validate Adler32 of zlib chunk
-							}
-							x++;
+						if (!zlib.IsValid)
+						{
+							// TODO WARNING that the zlib header failed validation
+							Console.WriteLine("Invalid");
 						}
+
+
+						var data = new byte[largest];
+						Console.WriteLine(reader.BaseStream.Position);
+						var input = reader.ReadBytes((int)index.PackedSize - 2);
+						Console.WriteLine(reader.BaseStream.Position);
+						using (var deflate = new DeflateStream(new MemoryStream(input), CompressionMode.Decompress))
+						{
+							var read = deflate.Read(data, 0, (int)index.UnpackedSize);
+							writer.Write(data, 0, read);
+							x++;
+							// TODO Validate Adler32 of zlib chunk
+						}
+						x++;
 					}
+					//}
 
 					//var x = 0;
 					//using (var file = File.Open(destination, FileMode.Create))
