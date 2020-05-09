@@ -22,7 +22,3 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         path: *nupkg
-    # - name: Push to NuGet
-    #   run: dotnet nuget push --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --disable-buffering --skip-duplicate
-    # - name: Push to GiHub Package Repository
-    #   run: dotnet nuget push --source "https://nuget.pkg.github.com/davidruhmann/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --disable-buffering --skip-duplicate
