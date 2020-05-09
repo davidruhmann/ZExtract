@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Authors>DavidRuhmann</Authors>
+    <PackageDescription>Steam .z file unpack utility.</PackageDescription>
     <PackageIcon>zbox.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>.z;steam;zextract</PackageTags>
