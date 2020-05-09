@@ -5,10 +5,8 @@ on:
     types: [published]
 
 jobs:
-  build:
-
+  release:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -22,7 +20,7 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release --no-restore --output .
     - name: Test
-      run: echo ${{ github.ref }}
+      run: echo ${GITHUB_REF##*/}
     # - name: Push to NuGet
     #   run: dotnet nuget push --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --disable-buffering --skip-duplicate
     # - name: Push to GiHub Package Repository
