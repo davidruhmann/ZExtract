@@ -18,9 +18,10 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Pack
-      run: dotnet pack --configuration Release --no-restore --output .
-    - name: Test
-      run: echo ${GITHUB_REF##*/}
+      run: dotnet pack --configuration Release --no-restore --output . -p:Version="${GITHUB_REF##*/}"
+    - uses: actions/upload-artifact@v2
+      with:
+        path: *nupkg
     # - name: Push to NuGet
     #   run: dotnet nuget push --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --disable-buffering --skip-duplicate
     # - name: Push to GiHub Package Repository
