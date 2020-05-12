@@ -37,7 +37,7 @@ jobs:
           name: "ZExtractCLI"
           path: "publish/*"
       - name: Package Publish
-        run: zip -r ZExtractCLI.zip publish/
+        run: zip -rjqD ZExtractCLI.zip publish/
       - name: Release ID
         run: echo "::set-env name=GITHUB_RELEASE_ID::$(jq --raw-output '.release.id' ${GITHUB_EVENT_PATH})"
       - name: Upload Release Asset
@@ -46,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${GITHUB_RELEASE_ID}/assets"
-          asset_path: ./ZExtractCLI.zip
+          upload_url: "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${GITHUB_RELEASE_ID}/assets?name="
+          asset_path: ZExtractCLI.zip
           asset_name: ZExtractCLI.zip
           asset_content_type: application/zip
