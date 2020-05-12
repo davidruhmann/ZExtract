@@ -27,7 +27,7 @@ jobs:
           path: "*nupkg"
       - name: Push to GiHub Package Repository
         #run: dotnet nuget push *nupkg --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/" --api-key ${{ secrets.GITHUB_TOKEN }} --disable-buffering --skip-duplicate
-        run: find *nupkg -maxdepth 1 -type f -exec gpr --api-key ${{ secrets.GITHUB_TOKEN }} --owner ${{ github.repository_owner }} push {}
+        run: find *nupkg -maxdepth 1 -type f -exec gpr --api-key ${{ secrets.GITHUB_TOKEN }} --owner ${{ github.repository_owner }} push {} +
       - name: Push to NuGet
         run: dotnet nuget push *nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --disable-buffering --skip-duplicate
       - name: Publish
