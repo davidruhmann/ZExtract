@@ -8,11 +8,11 @@ See [Releases](https://github.com/davidruhmann/ZExtract/releases) for the CLI.
 
 Or [Packages](https://github.com/davidruhmann/ZExtract/packages) for the NuGet package. (Also available at [NuGet.org](https://www.nuget.org/packages/ZExtract/))
 
-Or build your own from source.
-
 ```bash
 dotnet add package ZExtract
 ```
+
+Or build your own from source.
 
 ## Usage
 
