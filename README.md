@@ -2,6 +2,10 @@
 
 Steam .z file extraction utility.  Useful for those who download workshop files for servers using the steamcmd CLI.
 
+## Requirements
+
+* [dotnet core  runtime](https://dotnet.microsoft.com/download/dotnet-core/current/runtime)
+
 ## Download
 
 See [Releases](https://github.com/davidruhmann/ZExtract/releases) for the CLI.
@@ -23,6 +27,10 @@ dotnet ZExtractCLI myFile.asset.z outputDirectory\
 Will extract the .z file to `outputDirectory\myFile.asset`
 
 ## Build
+
+### Requirements
+
+* [dotnet core sdk](https://dotnet.microsoft.com/download)
 
 Checkout and run...
 
