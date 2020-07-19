@@ -1,4 +1,4 @@
-# ZExtract
+# <img src="assets/zbox.png" width="64"/>ZExtract
 
 Steam .z file extraction utility.  Useful for those who download workshop files for servers using the steamcmd CLI.
 
